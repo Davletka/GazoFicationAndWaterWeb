@@ -1,0 +1,167 @@
+﻿@page "/registration"
+
+@using GazoFicationAndWaterWeb.Data
+@using MongoDB.Driver
+
+@inject NavigationManager navMan
+
+<div class = "row">
+    <div class="col-lg-4 offset-lg-4 pt-4 pb4 border">
+        <div class="mb-3 text-center">
+            <h3>Регистрация аккаунта</h3>
+        </div>
+        <div class="mb-3">
+            <label>Логин</label>
+            <input @bind-value="Login_" class="form-control" placeholder="Введите логин"/>
+        </div>
+        <div class="mb-3">
+            <label>Пароль</label>
+            <input @bind-value="Password_" type="password" class="form-control" placeholder="Введите пароль"/>
+        </div>
+        <div class="mb-3">
+            <label>Подтверждение пароля</label>
+            <input @bind-value="RepeatPassword_" type="password" class="form-control" placeholder="Повторите пароль"/>
+        </div>
+        <div class="mb-3">
+            <label>Почта</label>
+            <input @bind-value="Email_" type="email" class="form-control" placeholder="Введите почту"/>
+        </div>
+        <div class="mb-3">
+            <label>Телефон</label>
+            <input @bind-value="PhoneNumber_" type="tel" class="form-control" placeholder="Введите телефон"/>
+        </div>
+        <div class="form-outline mb-4">
+            <label>Участники</label>
+            <select  @bind="membersSelect_" class="form-control" >
+            <option value="Customer">Заказчик</option>
+            <option value="Developer">Застройщик</option>
+            <option value="Designer">Проектировщик</option>
+            </select>
+        </div>
+        <div class="mb-3 d-grid gap-2">
+            <button type="sumbit" class="btn btn-primary" @onclick="RegMember">Зарегистрироваться</button>
+        </div>
+        @if (Check_ == true)
+        {
+            <h3>@Error_</h3>
+
+        }
+        @if (Check_1 == true)
+        {
+            <h3>@Error_</h3>
+        }
+    </div>
+</div>
+
+@code {
+    // Переменные
+
+    private string? Login_;
+    private string? Password_;
+    private string? RepeatPassword_;
+    private string? Email_;
+    private string? PhoneNumber_;
+    private string? membersSelect_;
+
+    private Members? member;
+
+    private Members customer = new Customer();
+    private Members designer = new Designer();
+    private Members developer = new Developer();
+
+    private bool? Check_ = false;
+    private bool? Check_1 = false;
+    private string? Error_;
+
+    // Методы
+
+    private void RegMember()
+    {
+        var client = new MongoClient();
+        var database = client.GetDatabase("Davletka");
+        var collection = database.GetCollection<Members>("GazWater");
+        var list = collection.Find(x => true).ToList();
+
+        if (Login_ != null && Password_ != null && Email_ != null && PhoneNumber_ != null &&  RepeatPassword_ != null && membersSelect_ != null)
+        {
+            if (Password_ == RepeatPassword_)
+            {
+                foreach (var item in list)
+                {
+                    if (Login_ == item.Login)
+                    {
+                        Error_ = "";
+                        Error_ = "Такой логин уже существует";
+                        Check_ = true;
+                        return;
+                    }
+                    else
+                    {
+                        Error_ = "";
+                    }
+                    if (Email_ == item.Email)
+                    {
+                        Error_ = "";
+                        Error_ = "Такая почта уже существует";
+                        Check_ = true;
+                        return;
+                    }
+                    else
+                    {
+                        Error_ = "";
+                    }
+                }
+                Check_ = false;
+                switch(membersSelect_)
+                {
+                    case "Customer":
+                        customer = new Customer()
+                        {
+                            Login = Login_,
+                            Password = Password_,
+                            Email = Email_,
+                            Phone = PhoneNumber_
+                        };
+                        MongoDataBase.AddDb(customer);
+                        break;
+
+                    case "Developer":
+                        developer = new Developer()
+                        {
+                            Login = Login_,
+                            Password = Password_,
+                            Email = Email_,
+                            Phone = PhoneNumber_
+                        };
+                        MongoDataBase.AddDb(developer);
+                        break;
+
+                        case "Designer":
+                        designer = new Designer()
+                        {
+                            Login = Login_,
+                            Password = Password_,
+                            Email = Email_,
+                            Phone = PhoneNumber_
+                        };
+                        MongoDataBase.AddDb(designer);
+                        break;
+                }
+                Error_ = "";
+                navMan.NavigateTo("/autorization");
+            }
+            else
+            {
+                Error_ = "";
+                Error_ = "Пароли не совпадают";
+                Check_ = true;
+            }
+        }
+        else
+        {   
+            Error_ = "";
+            Error_ = "Заполните все поля";
+            Check_ = true;
+        }
+    }
+}

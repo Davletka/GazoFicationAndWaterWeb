@@ -1,0 +1,79 @@
+﻿@page "/autorization"
+
+@inject NavigationManager navigateMan
+@inject MemberService memberService
+
+@using GazoFicationAndWaterWeb.Data
+@using MongoDB.Driver
+
+<div class = "row">
+    <div class="col-lg-4 offset-lg-4 pt-4 pb4 border">
+        <div class="mb-3 text-center">
+            <h3>Вход в аккаунт</h3>
+        </div>
+        <div class="mb-3">
+            <label>Логин</label>
+            <input @bind-value="Login_" class="form-control" placeholder="Введите логин"/>
+        </div>
+        <div class="mb-3">
+            <label>Пароль</label>
+            <input @bind-value="Password_" type="password" class="form-control" placeholder="Введите пароль"/>
+        </div>
+        <div class="mb-3 d-grid gap-2">
+            <button class="btn btn-primary" @onclick="NavigationAuto">Авторизоваться</button>
+        </div>
+        <div class="mb-3 d-grid gap-2">
+            <button class="btn btn-primary" @onclick="NavigationReg">Зарегистрироваться</button>
+        </div>
+        @if (Check_ == true)
+        {
+            @Error_;
+        }
+        @if (Check_1 == true)
+        {
+            @Error_1;
+        }
+    </div>
+</div>
+
+@code {
+    // Переменные
+
+    private string? Login_;
+    private string? Password_;
+
+    private bool? Check_ = false;
+    private string? Error_;
+    private bool? Check_1 = false;
+    private string? Error_1;
+
+    // Методы
+
+    private void NavigationReg()
+    {
+        navigateMan.NavigateTo("/registration");
+    }
+
+    private void NavigationAuto()
+    {
+        var client = new MongoClient();
+        var database = client.GetDatabase("Davletka");
+        var collection = database.GetCollection<Members>("GazWater");
+        var list = collection.Find(x => true).ToList();
+
+        foreach (var item in list)
+        {
+            if (Login_ == item.Login && Password_ == item.Password)
+            {
+                memberService.Set(item);
+                navigateMan.NavigateTo("/profile");
+            }
+            else
+            {
+                Check_1 = true;
+                Error_1 = "Введён неверный логин/пароль";
+                return;
+            }
+        }
+    }
+ }
