@@ -31,6 +31,14 @@ namespace GazoFicationAndWaterWeb.Data
             collection.ReplaceOne(x => x.Login == member.Login, member);
         }
 
+        public static void ReplacecProjects(Projects project, string name)
+        {
+            var client = new MongoClient();
+            var database = client.GetDatabase("Davletka");
+            var collection = database.GetCollection<Projects>("Projects");
+            collection.ReplaceOne(x => x.Name == project.Name, project);
+        }
+
         public static void AddDbProjects(Projects projects)
         {
             var client = new MongoClient();
@@ -68,6 +76,23 @@ namespace GazoFicationAndWaterWeb.Data
             var database = client.GetDatabase("Davletka");
             var collection = database.GetCollection<Documents>("Documents");
             collection.InsertOne(document);
+        }
+
+        public static void UpdateDoc(Documents documents, string name)
+        {
+            var client = new MongoClient();
+            var database = client.GetDatabase("Davletka");
+            var collection = database.GetCollection<Projects>("Projects");
+            var update = Builders<Projects>.Update.Push("Documents", documents);
+            collection.UpdateOne(x => x.Name == name, update);
+        }
+
+        public static void ReplaceByNameDoc(Documents documents, string login)
+        {
+            var client = new MongoClient();
+            var database = client.GetDatabase("Davletka");
+            var collection = database.GetCollection<Documents>("Documents");
+            collection.ReplaceOne(x => x.FileName == login, documents);
         }
     }
 }

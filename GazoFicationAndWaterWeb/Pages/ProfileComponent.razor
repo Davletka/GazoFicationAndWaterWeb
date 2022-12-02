@@ -57,9 +57,14 @@
                     {
                         <button class="btn btn-primary profile-button" type="button" @onclick="Projects" >Projects</button>
                     }
+                    @if (member.GetType().Name == "Developer" || member.GetType().Name == "Designer")
+                    {
+                        <button class="btn btn-primary profile-button" type="button" @onclick="CheckDocs" >Loaded Files</button>
+                        <button class="btn btn-primary profile-button" type="button" @onclick="Files">Files</button>
+                    }
                     <button class="btn btn-primary profile-button" type="button" @onclick="SaveChange" >Save Profile</button>
                     <button class="btn btn-primary profile-button" type="button" @onclick="Sign">Sign out</button>
-                    <button class="btn btn-primary profile-button" type="button" @onclick="Files">Files</button>
+
                 </div>
 
                 @if (Check_ == true)
@@ -210,5 +215,9 @@
     private void Projects()
     {
         navMan.NavigateTo("/project");
+    }
+    private void CheckDocs()
+    {
+        navMan.NavigateTo("loadedfiles");
     }
 }

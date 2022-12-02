@@ -1,20 +1,27 @@
 ﻿@page "/filesmembers"
 
 @using GazoFicationAndWaterWeb.Data
+@using MongoDB.Driver
 
 @inject IWebHostEnvironment Environment
 @inject MemberService custSer
 
-<div>
+<div class="row mt-2">
+    <div class="col-md-6"><label class="labels">Название проекта</label><input type="text" class="form-control" readonly="readonly" @bind-value="projects1.Name"></div>
+    <div class="col-md-6"><label class="labels">Отрасль</label><input type="text" class="form-control" readonly="readonly" @bind-value="projects1.Theme"></div>
+</div>
+
+<div class="row mt-2">
     <InputFile OnChange="AddFiles" multiple></InputFile>
 </div>
+
 
 <table class="table">
   <thead class="thead-light">
     <tr>
       <th scope="col">Name File</th>
-      <th scope="col">IsTrue</th>
       <th scope="col">Send</th>
+      <th scope="col">Update</th>
     </tr>
   </thead>
   <tbody>
@@ -22,20 +29,74 @@
     {
         <tr>
           <th scope="row">@item.Name</th>
-          <td>
+            <td>
                 <div class="form-check">
-                    <input class="form-check-input" name="check" @bind-value="cek" type="checkbox" id="flexCheckDefault">
+                  <button class="btn btn-primary" @onclick="() => Sumbt(item)">Отправить</button>
                 </div>
           </td>
             <td>
                 <div class="form-check">
-                  <button class="btn btn-primary" @onclick="() => Sumbt()">Отправить</button>
+                  <button class="btn btn-primary" @onclick="() => browserFile.Remove(item)">Изменить</button>
                 </div>
           </td>
         </tr>
     }
   </tbody>
 </table>
+
+@if (members.GetType().Name == "Developer" && projects1.Theme == "Gasification")
+{
+<div class="col-md-6">
+    <label class="text-center"><h2 >Нужные документы </h2></label>
+   <div class="row mt-2" >Акт обследования и выбор трассы сети водоснабжения.</div>
+    <div class="row mt-2" >Акт обследования и выбор места под проектируемую скважину</div>
+       <div class="row mt-2" >Градостроительный план земельного участка.</div>
+          <div class="row mt-2" >Документ подтверждающий проведение межевания с присвоением кадастрового номера земельного участка под строительством водопровода и сооружений на нем.</div>
+             <div class="row mt-2">Заключение Органа Роспотребнадзора санитарно-эпидемиологической службы по отводу земельного участка и результат радиационного обследования.</div>
+                <div class="row mt-2" >План населенного пункта (топографическая съемка).</div>
+                   <div class="row mt-2" >Сведения о наличие водозаборных скважин (родников) на территории хозяйства.</div>
+                      <div class="row mt-2">Согласованный ситуационный план с нанесением источников воды (скважин, родников и т.п), существующих водонапорных башен, предпологаемой трассой водопровода и места врезки в существующую сеть.</div>
+                         <div class="row mt-2" >Справка согласования с собственниками земельных участков.</div>
+                            <div class="row mt-2" >Технические условия на водоснабжение.</div>
+                               <div class="row mt-2" >Технические условия на электроснабжение.</div>
+</div>
+}
+@if (members.GetType().Name == "Developer" && projects1.Theme == "Water Suply")
+{
+    <div class="col-md-6 form-control" >
+    <label><h2 class="text-center">Нужные документы </h2></label>
+   <div class="col-md-6">АКТ обследования объекта.</div>
+      <div class="col-md-6">Задание на проектирование</div>
+         <div class="col-md-6">Письмо-обращение на имя Президента, Премьер-Министра, Минстрйо РТ.</div>
+            <div class="col-md-6">Ситуационный план (утвержденный исполкомом).</div>
+               <div class="col-md-6">Согласование посадки котельной.</div>
+                  <div class="col-md-6">Технические условия на присоединение к газораспределительной сети.</div>
+                     <div class="col-md-6">Технические условия на сети электроснабжение, водоснабжения, водоотведения при установке БМК.</div>
+                        <div class="col-md-6">Технический паспорт (план БТИ) объекта СКБ.</div>
+                           <div class="col-md-6">Технический паспорт (план БТИ) существующей котельной.</div>
+    </div>
+}
+
+@if (members.GetType().Name == "Designer" && projects1.Theme == "Gasification")
+{
+    <div class="col-md-6">
+    <label><h2 class="text-center">Нужные документы </h2></label>
+   <div class="col-md-6">Диаметр (мм) трубопровода и протяженность линейного объекта (м).</div>
+      <div class="col-md-6">Сметная стоимость работ, тыс.руб.</div>
+         <div class="col-md-6">Срок разработки проектной документации, месяцев.</div>
+    </div>
+}
+@if (members.GetType().Name == "Designer" && projects1.Theme == "Water Suply")
+{
+    <div class="col-md-6">
+    <label><h2 class="text-center">Нужные документы </h2></label>
+   <div class="col-md-6">Диаметр (мм) трубопровода и протяженность линейного объекта (м).</div>
+      <div class="col-md-6">кол-во (шт) и производительности КНС (м3 ч).</div>
+         <div class="col-md-6">Производительность БОС, м3 сут</div>
+                  <div class="col-md-6">Сметная стоимость работ, тыс.руб</div>
+                           <div class="col-md-6">Срок разработки проектной документации, месяцев</div>
+    </div>
+}
 
 
 @code {
@@ -45,7 +106,13 @@
 
     private Members? members;
 
-    Documents document = new Documents();
+    private Projects projects1;
+
+    private string? NameProject;
+
+    private string? Department;
+
+    private Documents document;
 
     private string path = string.Empty;
 
@@ -56,66 +123,109 @@
     protected override async Task OnInitializedAsync()
     {
         members = custSer.Get();
+
+        var client = new MongoClient();
+        var database = client.GetDatabase("Davletka");
+        var collection = database.GetCollection<Projects>("Projects");
+        var list = collection.Find(x => true).ToList();
+
+        var client1 = new MongoClient();
+        var database1 = client1.GetDatabase("Davletka");
+        var collection1 = database1.GetCollection<Projects>("Projects");
+        var list1 = collection1.Find(x => true).ToList();
+
+        foreach(var item in list)
+        {
+            if (members.Login == item.developer.Login)
+            {
+                projects1 = new Projects()
+                {
+                    CustomerName = item.CustomerName,
+                    Name = item.Name,
+                    Theme = item.Theme
+                };
+            }
+        }
     }
 
     private void AddFiles(InputFileChangeEventArgs e)
     {
-        if (e.FileCount == 11 && members.GetType().Name == "Developer" || e.FileCount == 9)
-        {
-            foreach (var items in e.GetMultipleFiles(e.FileCount))
-            {
-                browserFile.Add(items);
-                path = Path.Combine(Environment.ContentRootPath, "wwwroot", "filesDeveloper", items.Name);
-
-                using FileStream fs = new(path, FileMode.Create);
-                items.OpenReadStream(10000000000000).CopyToAsync(fs);
-            }
-        }
-
-        else if (e.FileCount == 2 && members.GetType().Name == "Designer" || e.FileCount == 3)
-        {
-            foreach (var items in e.GetMultipleFiles(e.FileCount))
-            {
-                browserFile.Add(items);
-                path = Path.Combine(Environment.ContentRootPath, "wwwroot", "filesDesigner", items.Name);
-
-                using FileStream fs = new(path, FileMode.Create);
-                items.OpenReadStream(10000000000000).CopyToAsync(fs);
-            }
-        }
-    }
-
-    private void Sumbt()
-    {
-
-        Projects projects = new Projects();
         if (members.GetType().Name == "Developer")
         {
-            foreach(var item in browserFile)
+            foreach (var items in e.GetMultipleFiles(e.FileCount))
             {
-                document = new Documents()
+                if (projects1.Theme == "Gasification" && items.Name == "Акт обследования и выбор трассы сети водоснабжения.pdf" || items.Name == "Акт обследования и выбор места под проектируемую скважину.pdf" || items.Name == "Градостроительный план земельного участка.pdf" || items.Name == "Документ подтверждающий проведение межевания с присвоением кадастрового номера земельного участка под строительством водопровода и сооружений на нем.pdf" || items.Name == "Заключение Органа Роспотребнадзора санитарно-эпидемиологической службы по отводу земельного участка и результат радиационного обследования.pdf" || items.Name == "План населенного пункта (топографическая съемка).pdf" || items.Name == "Сведения о наличие водозаборных скважин (родников) на территории хозяйства.pdf" || items.Name == "Согласованный ситуационный план с нанесением источников воды (скважин, родников и т.п), существующих водонапорных башен, предпологаемой трассой водопровода и места врезки в существующую сеть.pdf" || items.Name == "Справка согласования с собственниками земельных участков.pdf" || items.Name == "Технические условия на водоснабжение.pdf" || items.Name == "Технические условия на электроснабжение .pdf")
                 {
-                    Login = members.Login,
-                    FileName = item.Name,
-                    isTrue = cek
-                };
+                    browserFile.Add(items);
+                    path = Path.Combine(Environment.ContentRootPath, "wwwroot", "filesDeveloper", items.Name);
+
+                    using FileStream fs = new(path, FileMode.Create);
+                    items.OpenReadStream(10000000000000).CopyToAsync(fs);
+                }
+                else if (projects1.Theme == "Water Suply"&& items.Name == "АКТ обследования объекта.pdf" || items.Name == "Задание на проектирование.pdf" || items.Name == "Технический паспорт (план БТИ) существующей котельной.pdf" || items.Name == "Письмо-обращение на имя Президента, Премьер-Министра, Минстрйо РТ.pdf" || items.Name == "Ситуационный план (утвержденный исполкомом).pdf" || items.Name == "Согласование посадки котельной.pdf" || items.Name == "Технические условия на присоединение к газораспределительной сети.pdf" || items.Name == "Технические условия на сети электроснабжение, водоснабжения, водоотведения при установке БМК.pdf" || items.Name == "Технический паспорт (план БТИ) объекта СКБ.pdf")
+                {
+                    browserFile.Add(items);
+                    path = Path.Combine(Environment.ContentRootPath, "wwwroot", "filesDeveloper", items.Name);
+
+                    using FileStream fs = new(path, FileMode.Create);
+                    items.OpenReadStream(10000000000000).CopyToAsync(fs);
+                }
             }
-            MongoDataBase.AddDbDocuments(document);
         }
 
         else if (members.GetType().Name == "Designer")
         {
-            foreach(var item in browserFile)
+            foreach (var items in e.GetMultipleFiles(e.FileCount))
             {
-                document = new Documents()
+                if (projects1.Theme == "Water Suply" && items.Name == "Диаметр (мм) трубопровода и протяженность линейного объекта (м).pdf" || items.Name == "кол-во (шт) и производительности КНС (м3 ч).pdf" || items.Name == "Производительность БОС, м3 сут.pdf" || items.Name == "Сметная стоимость работ, тыс.руб.pdf" || items.Name == "Срок разработки проектной документации, месяцев.pdf")
                 {
-                    Login = members.Login,
-                    FileName = item.Name,
-                    isTrue = cek
-                };
-            }
-            MongoDataBase.AddDbDocuments(document);
+                    browserFile.Add(items);
+                    path = Path.Combine(Environment.ContentRootPath, "wwwroot", "filesDesigner", items.Name);
 
+                    using FileStream fs = new(path, FileMode.Create);
+                    items.OpenReadStream(10000000000000).CopyToAsync(fs);
+                }
+                else if (projects1.Theme == "Gasification" && items.Name == "Диаметр (мм) трубопровода и протяженность линейного объекта (м).pdf" || items.Name == "Сметная стоимость работ, тыс.руб.pdf" || items.Name == "Срок разработки проектной документации, месяцев.pdf")
+                {
+                    browserFile.Add(items);
+                    path = Path.Combine(Environment.ContentRootPath, "wwwroot", "filesDesigner", items.Name);
+
+                    using FileStream fs = new(path, FileMode.Create);
+                    items.OpenReadStream(10000000000000).CopyToAsync(fs);
+                }
+
+            }
+        }
+    }
+
+    private void Sumbt(IBrowserFile br)
+    {
+        if (members.GetType().Name == "Developer")
+        {
+            document = new Documents()
+                {
+                    Customer = projects1.CustomerName,
+                    Login = members.Login,
+                    FileName = br.Name,
+                    isTrue = cek
+            };
+            MongoDataBase.UpdateDoc(document, document.FileName);
+            MongoDataBase.AddDbDocuments(document);
+            MongoDataBase.UploadToDb(br, path);
+        }
+
+        else if (members.GetType().Name == "Designer")
+        {
+            document = new Documents()
+            {
+                Customer = projects1.CustomerName,
+                Login = members.Login,
+                FileName = br.Name,
+                isTrue = cek
+            };
+            MongoDataBase.UpdateDoc(document, document.FileName);
+            MongoDataBase.AddDbDocuments(document);
+            MongoDataBase.UploadToDb(br, path);
         }
     }
 }

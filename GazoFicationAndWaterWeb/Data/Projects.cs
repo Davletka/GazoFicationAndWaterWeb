@@ -17,7 +17,5 @@ namespace GazoFicationAndWaterWeb.Data
         public Developer? developer { get; set; }
         [BsonIgnoreIfDefault]
         public Designer? designer { get; set; }
-
-        public List<Documents> Documents { get; set; }
     }
 }

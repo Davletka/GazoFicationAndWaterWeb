@@ -1,28 +1,75 @@
 ﻿@page "/filesCustomer"
 
-@*<table class="table">
+@using GazoFicationAndWaterWeb.Data
+@using MongoDB.Driver
+
+@inject MemberService memSer
+
+<table class="table">
   <thead class="thead-light">
     <tr>
       <th scope="col">Name File</th>
+        <th scope="col">Login</th>
       <th scope="col">IsTrue</th>
+      <th scope="col">Send</th>
+      <th scope="col">Download</th>
     </tr>
   </thead>
   <tbody>
-    @foreach (var item in browserFile)
+    @foreach (var item in documents)
     {
         <tr>
-          <th scope="row">@item.Name</th>
+          <th scope="row">@item.FileName</th>
+            <th scope="row">@item.Login</th>
           <td>
                 <div class="form-check">
-                    <input class="form-check-input" name="check" @bind-value="cek" type="checkbox" id="flexCheckDefault">
+                    <input class="form-check-input" name="check" @bind-value="cek" type="checkbox" @onclick="() => Send(item)" id="flexCheckDefault">
+                </div>
+          </td>
+           <td>
+                <div class="form-check">
+                  <button class="btn btn-primary" @onclick="() => Send(item)">Отправить</button>
+                </div>
+          </td>
+            <td>
+                <div class="form-check">
+                  <button class="btn btn-primary" @onclick="() => MongoDataBase.DownloadToLocal(item.FileName)">Скачать</button>
                 </div>
           </td>
         </tr>
     }
   </tbody>
-</table>*@
+</table>
 
 
 @code {
+    private Members members;
+    private bool cek;
 
+    List<Documents> documents = new List<Documents>();
+    Projects projects = new Projects();
+    // Методы 
+
+    protected override async Task OnInitializedAsync()
+    {
+        members = memSer.Get();
+
+        var client = new MongoClient();
+        var database = client.GetDatabase("Davletka");
+        var collection = database.GetCollection<Documents>("Documents");
+        var list = collection.Find(x => true).ToList();
+
+        foreach(var item in list)
+        {
+            if (item.Customer == members.Login)
+            {
+                documents.Add(item);
+            }
+        }
+    }
+    private void Send(Documents documents)
+    {
+        documents.isTrue = cek;
+        MongoDataBase.ReplaceByNameDoc(documents, documents.FileName);
+    }
 }

@@ -1,0 +1,54 @@
+﻿@page "/loadedfiles"
+
+@inject MemberService memSer
+
+@using GazoFicationAndWaterWeb.Data
+@using MongoDB.Driver
+
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">Name File</th>
+      <th scope="col">IsTrue</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in documents)
+    {
+        <tr>
+          <th scope="row">@item.FileName</th>
+            <th scope="row">@item.isTrue</th>
+        </tr>
+    }
+  </tbody>
+</table>
+
+@code {
+    // Переменные 
+
+    private List<Documents> documents = new List<Documents>();
+
+    private Members members;
+
+    private bool check;
+    //Методы 
+
+    protected override async Task OnInitializedAsync()
+    {
+        members = memSer.Get();
+
+        var client = new MongoClient();
+        var database = client.GetDatabase("Davletka");
+        var collection = database.GetCollection<Documents>("Documents");
+        var list = collection.Find(x => true).ToList();
+
+        foreach (var item in list)
+        {
+            if (members.Login == item.Login)
+            {
+                documents.Add(item);
+                check = item.isTrue;
+            }
+        }
+    }
+}
