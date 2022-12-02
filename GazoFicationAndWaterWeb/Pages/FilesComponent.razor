@@ -14,16 +14,22 @@
     <tr>
       <th scope="col">Name File</th>
       <th scope="col">IsTrue</th>
+      <th scope="col">Send</th>
     </tr>
   </thead>
   <tbody>
     @foreach (var item in browserFile)
     {
         <tr>
-          <th scope="row">2</th>
+          <th scope="row">@item.Name</th>
           <td>
                 <div class="form-check">
-                    <input class="form-check-input" name="check"  type="checkbox" id="flexCheckDefault">
+                    <input class="form-check-input" name="check" @bind-value="cek" type="checkbox" id="flexCheckDefault">
+                </div>
+          </td>
+            <td>
+                <div class="form-check">
+                  <button class="btn btn-primary" @onclick="() => Sumbt()">Отправить</button>
                 </div>
           </td>
         </tr>
@@ -42,6 +48,8 @@
     Documents document = new Documents();
 
     private string path = string.Empty;
+
+    private bool cek = false;
 
     // Методы 
 
@@ -77,4 +85,37 @@
         }
     }
 
+    private void Sumbt()
+    {
+
+        Projects projects = new Projects();
+        if (members.GetType().Name == "Developer")
+        {
+            foreach(var item in browserFile)
+            {
+                document = new Documents()
+                {
+                    Login = members.Login,
+                    FileName = item.Name,
+                    isTrue = cek
+                };
+            }
+            MongoDataBase.AddDbDocuments(document);
+        }
+
+        else if (members.GetType().Name == "Designer")
+        {
+            foreach(var item in browserFile)
+            {
+                document = new Documents()
+                {
+                    Login = members.Login,
+                    FileName = item.Name,
+                    isTrue = cek
+                };
+            }
+            MongoDataBase.AddDbDocuments(document);
+
+        }
+    }
 }

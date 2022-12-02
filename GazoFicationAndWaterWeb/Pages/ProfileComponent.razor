@@ -21,7 +21,7 @@
                     <div class="col-md-6"><label class="labels">Логин</label><input type="text" class="form-control" @bind-value="Login_"></div>
                     <div class="col-md-6"><label class="labels">Пароль</label><input type="text" class="form-control" @bind-value="Password_"></div>
                     <div class="col-md-6"><label class="labels">Почта</label><input type="email" class="form-control" @bind-value="Email_"></div>
-                    <div class="col-md-6"><label class="labels">Телефон</label><input type="tel" class="form-control" @bind-value="Phone_"/></div>
+                    <div class="col-md-6"><label class="labels">Телефон</label><input type="tel" maxlength="11" class="form-control" @bind-value="Phone_"/></div>
                 </div>
                 @if (member.GetType().Name == "Customer")
                 {
@@ -59,7 +59,7 @@
                     }
                     <button class="btn btn-primary profile-button" type="button" @onclick="SaveChange" >Save Profile</button>
                     <button class="btn btn-primary profile-button" type="button" @onclick="Sign">Sign out</button>
-                    <button class="btn btn-primary profile-button" type="button" @onclick="Sign">Files</button>
+                    <button class="btn btn-primary profile-button" type="button" @onclick="Files">Files</button>
                 </div>
 
                 @if (Check_ == true)
@@ -142,19 +142,6 @@
 
     private void SaveChange()
     {
-        //var client = new MongoClient();
-        //var database = client.GetDatabase("Davletka");
-        //var collection = database.GetCollection<Members>("GazWater");
-        //var list = collection.Find(x => true).ToList();
-
-        //foreach (var item in list)
-        //{
-        //    if (Login_ == item.Login){Error_ = "Такой логин уже существует"; Check_ = true; return; }
-        //    else {Error_ = "";}
-        //    if (Email_ == item.Email){Error_ = "Такая почта уже существует"; Check_ = true; return; }
-        //    else {Error_ = "";}
-        //}
-
         switch (member.GetType().Name)
         {
             case "Customer":

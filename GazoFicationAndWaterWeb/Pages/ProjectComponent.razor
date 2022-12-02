@@ -3,30 +3,38 @@
 @using GazoFicationAndWaterWeb.Data
 @using MongoDB.Driver
 
+
+@inject NavigationManager navMan
 @inject MemberService memberService
 
 <div class="row mt-2">
     <div class="col-md-6"><label class="labels">Название проекта</label><input type="text" class="form-control" @bind-value="NameProject_"></div>
     <div class="col-md-6"><label class="labels">Отрасль</label><input type="text" class="form-control" readonly="readonly" @bind-value="(members as Customer).Department"></div>
 
-            <div class="form-control">
-                <label>Застройщик</label>
-                <select @bind="developer_" class="form-control" >
-                @foreach(var item in developerM)
-                {
-                    <option value="@item.Login">@item.Login</option>
-                }
-            </select>
-            </div>
-            <div class="form-control">
-                <label>Проектировщик</label>
-                <select @bind="designer_" class="form-control" >
-                @foreach(var item in designerM)
-                {
-                    <option value="@item.Login">@item.Login</option>
-                }
-            </select>
-            </div>
+    <div class="form-control">
+        <label>Застройщик</label>
+        <select @bind="developer_" class="form-control" >
+        @foreach(var item in developerM)
+        {
+            <option value="@item.Login">@item.Login</option>
+        }
+    </select>
+    </div>
+    <div class="form-control">
+        <label>Проектировщик</label>
+        <select @bind="designer_" class="form-control" >
+        @foreach(var item in designerM)
+        {
+            <option value="@item.Login">@item.Login</option>
+        }
+    </select>
+    </div>
+    <button class="btn btn-primary" @onclick="CreateProject">Создать проект</button>
+
+    @if(Check == true)
+    {
+        <h2>@Error_</h2>
+    }
 </div>
 @if (projects != null)
 {
@@ -34,26 +42,33 @@
   <thead class="thead-light">
     <tr>
       <th scope="col">Name Project</th>
+     <th scope="col">Customer</th>
       <th scope="col">Theme</th>
        <th scope="col">Developer</th>
        <th scope="col">Designer</th>
+        <th scope="col">Docuemnts</th>
     </tr>
   </thead>
   <tbody>
     @foreach (var item in projects)
     {
-        <tr>
-          <td scope="row">@item.Name</td>
-          <td scope="row">@item.Theme</td>
-          <td scope="row">@item.developer.Login</td>
-            <td scope="row">@item.designer.Login</td>
-        </tr>
+        @if (item.CustomerName == members.Login)
+        {
+            <tr>
+              <td scope="row">@item.Name</td>
+              <td scope="row">@item.CustomerName</td>
+              <td scope="row">@item.Theme</td>
+              <td scope="row">@item.developer.Login</td>
+              <td scope="row">@item.designer.Login</td>
+              <td scope="row">
+                  <button class="btn btn-primary" @onclick="() => Doc()">Документы</button>
+              </td>
+            </tr>    
+        }
     }
   </tbody>
     </table>
 }
-
-
 @code {
 
     // Переменные
@@ -70,6 +85,9 @@
 
     private List<Developer> developerM = new List<Developer>();
     private List<Designer> designerM = new List<Designer>();
+
+    private bool Check;
+    private string Error_ = "Проект успешно создан";
 
     // Методы
     protected override async Task OnInitializedAsync()
@@ -100,5 +118,30 @@
                 designerM.Add(des as Designer);
             }
         }
+    }
+
+    private void CreateProject()
+    {
+        foreach(var item in developerM)
+        {
+            foreach(var item1 in designerM)
+            {
+                Projects projectss = new Projects()
+                {
+                    Name = NameProject_,
+                    CustomerName = members.Login,
+                    Theme = (members as Customer).Department,
+                    developer = item,
+                    designer = item1
+                };
+                MongoDataBase.AddDbProjects(projectss);
+            }
+        }
+        Check = true;
+    }
+
+    private void Doc()
+    {
+        navMan.NavigateTo("/filesCustomer");
     }
 }
