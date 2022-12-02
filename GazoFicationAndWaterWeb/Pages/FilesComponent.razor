@@ -1,0 +1,80 @@
+﻿@page "/filesmembers"
+
+@using GazoFicationAndWaterWeb.Data
+
+@inject IWebHostEnvironment Environment
+@inject MemberService custSer
+
+<div>
+    <InputFile OnChange="AddFiles" multiple></InputFile>
+</div>
+
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">Name File</th>
+      <th scope="col">IsTrue</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in browserFile)
+    {
+        <tr>
+          <th scope="row">2</th>
+          <td>
+                <div class="form-check">
+                    <input class="form-check-input" name="check"  type="checkbox" id="flexCheckDefault">
+                </div>
+          </td>
+        </tr>
+    }
+  </tbody>
+</table>
+
+
+@code {
+    // Переменные
+
+    private List<IBrowserFile>? browserFile = new List<IBrowserFile>();
+
+    private Members? members;
+
+    Documents document = new Documents();
+
+    private string path = string.Empty;
+
+    // Методы 
+
+    protected override async Task OnInitializedAsync()
+    {
+        members = custSer.Get();
+    }
+
+    private void AddFiles(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount == 11 && members.GetType().Name == "Developer" || e.FileCount == 9)
+        {
+            foreach (var items in e.GetMultipleFiles(e.FileCount))
+            {
+                browserFile.Add(items);
+                path = Path.Combine(Environment.ContentRootPath, "wwwroot", "filesDeveloper", items.Name);
+
+                using FileStream fs = new(path, FileMode.Create);
+                items.OpenReadStream(10000000000000).CopyToAsync(fs);
+            }
+        }
+
+        else if (e.FileCount == 2 && members.GetType().Name == "Designer" || e.FileCount == 3)
+        {
+            foreach (var items in e.GetMultipleFiles(e.FileCount))
+            {
+                browserFile.Add(items);
+                path = Path.Combine(Environment.ContentRootPath, "wwwroot", "filesDesigner", items.Name);
+
+                using FileStream fs = new(path, FileMode.Create);
+                items.OpenReadStream(10000000000000).CopyToAsync(fs);
+            }
+        }
+    }
+
+}

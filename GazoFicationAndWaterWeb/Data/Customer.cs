@@ -8,7 +8,5 @@ namespace GazoFicationAndWaterWeb.Data
         public string? FullName { get; set; }
         [BsonIgnoreIfNull]
         public string? Department { get; set; }
-        [BsonIgnoreIfNull]
-        public string? JobTitle { get; set; }
     }
 }

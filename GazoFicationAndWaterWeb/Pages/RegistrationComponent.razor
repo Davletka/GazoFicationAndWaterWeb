@@ -38,6 +38,18 @@
             <option value="Designer">Проектировщик</option>
             </select>
         </div>
+            @if (membersSelect_ == "Customer")
+            {
+                <div class="form-outline mb-4">
+                <label class="form-label">Отрасль</label>
+                        <select @bind=Department_
+                        class="form-control" >
+                        <option value="Gasification">Газофикация</option>
+                        <option value="Water supply">Водоснабжение</option>
+                    </select>
+                </div>
+                <br>                
+            }
         <div class="mb-3 d-grid gap-2">
             <button type="sumbit" class="btn btn-primary" @onclick="RegMember">Зарегистрироваться</button>
         </div>
@@ -62,6 +74,8 @@
     private string? Email_;
     private string? PhoneNumber_;
     private string? membersSelect_;
+
+    private string? Department_;
 
     private Members? member;
 
@@ -120,7 +134,8 @@
                             Login = Login_,
                             Password = Password_,
                             Email = Email_,
-                            Phone = PhoneNumber_
+                            Phone = PhoneNumber_,
+                            Department = Department_
                         };
                         MongoDataBase.AddDb(customer);
                         break;

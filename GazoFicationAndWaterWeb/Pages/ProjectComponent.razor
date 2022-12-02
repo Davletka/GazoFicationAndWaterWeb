@@ -1,0 +1,104 @@
+﻿@page "/project"
+
+@using GazoFicationAndWaterWeb.Data
+@using MongoDB.Driver
+
+@inject MemberService memberService
+
+<div class="row mt-2">
+    <div class="col-md-6"><label class="labels">Название проекта</label><input type="text" class="form-control" @bind-value="NameProject_"></div>
+    <div class="col-md-6"><label class="labels">Отрасль</label><input type="text" class="form-control" readonly="readonly" @bind-value="(members as Customer).Department"></div>
+
+            <div class="form-control">
+                <label>Застройщик</label>
+                <select @bind="developer_" class="form-control" >
+                @foreach(var item in developerM)
+                {
+                    <option value="@item.Login">@item.Login</option>
+                }
+            </select>
+            </div>
+            <div class="form-control">
+                <label>Проектировщик</label>
+                <select @bind="designer_" class="form-control" >
+                @foreach(var item in designerM)
+                {
+                    <option value="@item.Login">@item.Login</option>
+                }
+            </select>
+            </div>
+</div>
+@if (projects != null)
+{
+    <table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">Name Project</th>
+      <th scope="col">Theme</th>
+       <th scope="col">Developer</th>
+       <th scope="col">Designer</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in projects)
+    {
+        <tr>
+          <td scope="row">@item.Name</td>
+          <td scope="row">@item.Theme</td>
+          <td scope="row">@item.developer.Login</td>
+            <td scope="row">@item.designer.Login</td>
+        </tr>
+    }
+  </tbody>
+    </table>
+}
+
+
+@code {
+
+    // Переменные
+
+    private List<Projects> projects = new List<Projects>();
+    private Members members;
+
+    private string NameProject_;
+    private string developer_;
+    private string designer_;
+
+    private Members dev = new Developer();
+    private Members des = new Designer();
+
+    private List<Developer> developerM = new List<Developer>();
+    private List<Designer> designerM = new List<Designer>();
+
+    // Методы
+    protected override async Task OnInitializedAsync()
+    {
+        members = memberService.Get();
+
+        var client = new MongoClient();
+        var database = client.GetDatabase("Davletka");
+        var collection = database.GetCollection<Projects>("Projects");
+        var list = collection.Find(x => true).ToList();
+        projects = list;
+
+        var client1 = new MongoClient();
+        var database1 = client1.GetDatabase("Davletka");
+        var collection1 = database1.GetCollection<Members>("GazWater");
+        var list1 = collection1.Find(x => true).ToList();
+
+        foreach (var item in list1)
+        {
+            if (item.GetType().Name == "Developer")
+            {
+                dev = item;
+                developerM.Add(dev as Developer);
+            }
+            else if (item.GetType().Name == "Designer")
+            {
+                des = item;
+                designerM.Add(des as Designer);
+            }
+        }
+    }
+}

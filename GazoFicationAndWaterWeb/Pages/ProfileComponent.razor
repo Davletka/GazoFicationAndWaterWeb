@@ -1,5 +1,227 @@
 ﻿@page "/profile"
 
-@code {
+@using GazoFicationAndWaterWeb.Data
+@using MongoDB.Driver
 
+@inject MemberService memService
+@inject IWebHostEnvironment Environment
+@inject NavigationManager navMan
+
+<div class="container rounded bg-white mt-5 mb-5 form-control" >
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span class="font-weight-bold">@member.Login</span><span class="text-black-50">@member.Email</span><span> </span></div>
+        </div>
+        <div class="col-md-5 border-right">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Profile Settings</h4>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6"><label class="labels">Логин</label><input type="text" class="form-control" @bind-value="Login_"></div>
+                    <div class="col-md-6"><label class="labels">Пароль</label><input type="text" class="form-control" @bind-value="Password_"></div>
+                    <div class="col-md-6"><label class="labels">Почта</label><input type="email" class="form-control" @bind-value="Email_"></div>
+                    <div class="col-md-6"><label class="labels">Телефон</label><input type="tel" class="form-control" @bind-value="Phone_"/></div>
+                </div>
+                @if (member.GetType().Name == "Customer")
+                {
+                    <div class="row mt-3">
+                        <div class="col-md-12"><label class="labels">Фио</label><input type="text" class="form-control" placeholder="Введите ваше Фио" @bind-value="FullName_"></div>
+                        <div class="col-md-12"><label class="labels">Отрасль</label><input type="text" class="form-control" placeholder="Введите отдел" @bind-value="Department_"></div>
+                    </div>
+                }
+                @if (member.GetType().Name == "Developer")
+                {
+                    <div class="row mt-3">
+                        <div class="col-md-12"><label class="labels">ОГРН</label><input type="text" class="form-control" maxlength="13" placeholder="Введите ОГРН" @bind-value="OGRN_"></div>
+                        <div class="col-md-12"><label class="labels">ИНН</label><input type="text" class="form-control" maxlength="10" placeholder="Введите ИНН" @bind-value="INN_"></div>
+                        <div class="col-md-12"><label class="labels">КПП</label><input type="text" class="form-control" maxlength="9" placeholder="Введите КПП" @bind-value="KPP_"></div>
+                        <div class="col-md-12"><label class="labels">Адрес</label><input type="text" class="form-control" placeholder="Введите адрес" @bind-value="Address_"></div>
+                        <div class="col-md-12"><label class="labels">Руководитель исполнительного коммитета РТ</label><input type="text" class="form-control" placeholder="Введите руководителя" @bind-value="HeadOfTheExecutiveDepartmentOfTheRTCommittee_"></div>
+                    </div>
+                }
+                @if (member.GetType().Name == "Designer")
+                {
+                    <div class="row mt-3">
+                        <div class="col-md-12"><label class="labels">ОГРН</label><input type="text" class="form-control" maxlength="13" placeholder="Введите ОГРН" @bind-value="OGRNN_"></div>
+                        <div class="col-md-12"><label class="labels">ИПП</label><input type="text" class="form-control" maxlength="12" placeholder="Введите ИПП" @bind-value="IPP_"></div>
+                        <div class="col-md-12"><label class="labels">КПП</label><input type="text" class="form-control" maxlength="9" placeholder="Введите КПП" @bind-value="KPPP_"></div>
+                        <div class="col-md-12"><label class="labels">Адрес</label><input type="text" class="form-control" placeholder="Введите адрес" @bind-value="Addresss_"></div>
+                        <div class="col-md-12"><label class="labels">Директор</label><input type="text" class="form-control" placeholder="Введите Фио директора" @bind-value="Director_"></div>
+                        <div class="col-md-12"><label class="labels">Главный инженер проекта</label><input type="text" class="form-control" placeholder="Введите Фио главного инженера" @bind-value="MainInjenerProject_"></div>
+                    </div>
+                }
+
+                <div class="mt-5 text-center">
+                    @if (member.GetType().Name == "Customer")
+                    {
+                        <button class="btn btn-primary profile-button" type="button" @onclick="Projects" >Projects</button>
+                    }
+                    <button class="btn btn-primary profile-button" type="button" @onclick="SaveChange" >Save Profile</button>
+                    <button class="btn btn-primary profile-button" type="button" @onclick="Sign">Sign out</button>
+                    <button class="btn btn-primary profile-button" type="button" @onclick="Sign">Files</button>
+                </div>
+
+                @if (Check_ == true)
+                {
+                    <h2>@Error_</h2>
+                }
+                @if (Check_1 == true)
+                {
+                    <h2>@Error_</h2>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    // Переменные
+
+    private Members? member;
+    private string? Login_;
+    private string? Password_;
+    private string? Email_;
+    private string? Phone_;
+
+    private string? FullName_;
+    private string? Department_;
+
+
+    private string? OGRN_;
+    private string? INN_;
+    private string? KPP_;
+    private string? Address_;
+    private string? HeadOfTheExecutiveDepartmentOfTheRTCommittee_;
+
+
+    public string? NameOfTheProjectOrganization_;
+    public string? OGRNN_;
+    public string? IPP_;
+    public string? KPPP_;
+    public string? Addresss_;
+    public string? Director_;
+    public string? MainInjenerProject_;
+
+    private bool? Check_ = false;
+    private bool? Check_1 = false;
+    private string? Error_ = "";
+
+    // Методы 
+    protected override async Task OnInitializedAsync()
+    {
+        member = memService.Get();
+        Login_ = member.Login;
+        Password_ = member.Password;
+        Email_ = member.Email;
+        Phone_ = member.Phone;
+
+        if (member.GetType().Name == "Customer")
+        {
+            FullName_ = (member as Customer).FullName;
+            Department_ = (member as Customer).Department;
+        }
+        else if (member.GetType().Name == "Developer")
+        {
+            OGRN_ = (member as Developer).OGRN;
+            INN_ = (member as Developer).INN;
+            KPP_ = (member as Developer).KPP;
+            Address_ = (member as Developer).Address;
+            HeadOfTheExecutiveDepartmentOfTheRTCommittee_ = (member as Developer).HeadOfTheExecutiveDepartmentOfTheRTCommittee;
+        }
+        else if (member.GetType().Name == "Designer")
+        {
+            NameOfTheProjectOrganization_ = (member as Designer).NameOfTheProjectOrganization;
+            IPP_ = (member as Designer).IPP;
+            OGRNN_ = (member as Designer).OGRN;
+            KPPP_ = (member as Designer).KPP;
+            Addresss_ = (member as Designer).Address;
+            Director_ = (member as Designer).Director;
+            MainInjenerProject_ = (member as Designer).MainInjenerProject;
+        }
+    }
+
+    private void SaveChange()
+    {
+        //var client = new MongoClient();
+        //var database = client.GetDatabase("Davletka");
+        //var collection = database.GetCollection<Members>("GazWater");
+        //var list = collection.Find(x => true).ToList();
+
+        //foreach (var item in list)
+        //{
+        //    if (Login_ == item.Login){Error_ = "Такой логин уже существует"; Check_ = true; return; }
+        //    else {Error_ = "";}
+        //    if (Email_ == item.Email){Error_ = "Такая почта уже существует"; Check_ = true; return; }
+        //    else {Error_ = "";}
+        //}
+
+        switch (member.GetType().Name)
+        {
+            case "Customer":
+                Members customer = new Customer()
+                {
+                    Login = Login_,
+                    Password = Password_,
+                    Email = Email_,
+                    Phone = Phone_,
+                    FullName = FullName_,
+                    Department = Department_
+                };
+                Check_ = true;
+                MongoDataBase.ReplaceByName(customer, member.Login);
+                break;
+
+            case "Developer":
+                Members developer = new Developer()
+                {
+                    Login = Login_,
+                    Password = Password_,
+                    Email = Email_,
+                    Phone = Phone_,
+                    OGRN = OGRN_,
+                    INN = INN_,
+                    KPP = KPP_,
+                    Address = Address_,
+                    HeadOfTheExecutiveDepartmentOfTheRTCommittee = HeadOfTheExecutiveDepartmentOfTheRTCommittee_
+                };
+                Check_ = true;
+                MongoDataBase.ReplaceByName(developer, member.Login);
+                break;
+
+            case "Designer":
+                Members designer = new Designer()
+                {
+                    Login = Login_,
+                    Password = Password_,
+                    Email = Email_,
+                    Phone = Phone_,
+                    NameOfTheProjectOrganization = NameOfTheProjectOrganization_,
+                    OGRN = OGRNN_,
+                    IPP = IPP_,
+                    KPP = KPPP_,
+                    Address = Addresss_,
+                    Director = Director_,
+                    MainInjenerProject = MainInjenerProject_
+                };
+                Check_ = true;
+                MongoDataBase.ReplaceByName(designer, member.Login);
+                break;
+        }
+        Error_ = "Изменения сохранены";
+    }
+
+    private void Sign()
+    {
+        navMan.NavigateTo("/autorization");
+    }
+
+    private void Files()
+    {
+        navMan.NavigateTo("/filesmembers");
+    }
+
+    private void Projects()
+    {
+        navMan.NavigateTo("/project");
+    }
 }
