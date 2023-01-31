@@ -5,6 +5,10 @@ VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GazoFicationAndWaterWeb", "GazoFicationAndWaterWeb\GazoFicationAndWaterWeb.csproj", "{F459FD3B-0D58-4FE3-A61C-E430BD3556DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatAsp", "ChatAsp\ChatAsp.csproj", "{F5C89787-14F8-45DE-BAF7-CB367182805E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatWpf", "ChatWpf\ChatWpf.csproj", "{5D8866E7-C304-42C1-9875-14A69685ECBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{F459FD3B-0D58-4FE3-A61C-E430BD3556DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F459FD3B-0D58-4FE3-A61C-E430BD3556DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F459FD3B-0D58-4FE3-A61C-E430BD3556DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5C89787-14F8-45DE-BAF7-CB367182805E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5C89787-14F8-45DE-BAF7-CB367182805E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5C89787-14F8-45DE-BAF7-CB367182805E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5C89787-14F8-45DE-BAF7-CB367182805E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D8866E7-C304-42C1-9875-14A69685ECBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D8866E7-C304-42C1-9875-14A69685ECBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D8866E7-C304-42C1-9875-14A69685ECBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D8866E7-C304-42C1-9875-14A69685ECBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

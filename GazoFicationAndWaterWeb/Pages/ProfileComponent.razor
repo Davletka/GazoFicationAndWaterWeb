@@ -1,7 +1,11 @@
 ﻿@page "/profile"
 
+@using ChatWpf;
+@using Microsoft.AspNetCore.SignalR.Client;
+
 @using GazoFicationAndWaterWeb.Data
 @using MongoDB.Driver
+@using System.Diagnostics;
 
 @inject MemberService memService
 @inject IWebHostEnvironment Environment
@@ -62,8 +66,9 @@
                         <button class="btn btn-primary profile-button" type="button" @onclick="CheckDocs" >Loaded Files</button>
                         <button class="btn btn-primary profile-button" type="button" @onclick="Files">Files</button>
                     }
-                    <button class="btn btn-primary profile-button" type="button" @onclick="SaveChange" >Save Profile</button>
+                    <button class="btn btn-primary profile-button" type="button" @onclick="SaveChange">Save Profile</button>
                     <button class="btn btn-primary profile-button" type="button" @onclick="Sign">Sign out</button>
+                    <button class="btn btn-primary" profile-button type="button" @onclick="ChatWpf">Chat</button>
 
                 </div>
 
@@ -219,5 +224,10 @@
     private void CheckDocs()
     {
         navMan.NavigateTo("loadedfiles");
+    }
+
+    private async void ChatWpf()
+    {
+        Process.Start(@"C:\Users\kizaq\OneDrive\Рабочий стол\Projects\ChatGaz\ChatWpf\bin\Debug\ChatWpf.exe");
     }
 }

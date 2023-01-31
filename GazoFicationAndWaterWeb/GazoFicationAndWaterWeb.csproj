@@ -7,14 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.2" />
     <PackageReference Include="MongoDB.Bson" Version="2.18.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
     <PackageReference Include="MongoDB.Driver.GridFS" Version="2.18.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Chat\" />
     <Folder Include="wwwroot\filesDeveloper\" />
     <Folder Include="wwwroot\filesDesigner\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChatAsp\ChatAsp.csproj" />
+    <ProjectReference Include="..\ChatWpf\ChatWpf.csproj" />
   </ItemGroup>
 
 </Project>
