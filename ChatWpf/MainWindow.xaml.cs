@@ -28,11 +28,11 @@ namespace ChatWpf
             InitializeComponent();
 
             connection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7168/chat")
+                .WithUrl("https://localhost:7055/chat")
                 .WithAutomaticReconnect()
                 .Build();
 
-            connection.On<string, string>("Receive", (user, message) =>
+            connection.On<string, string>("ReceiveMessage", (user, message) =>
             {
                 Dispatcher.Invoke(() =>
                 {
@@ -62,7 +62,7 @@ namespace ChatWpf
             try
             {
                 // отправка сообщения
-                await connection.InvokeAsync("Send", userTextBox.Text, messageTextBox.Text);
+                await connection.InvokeAsync("SendMessage", userTextBox.Text, messageTextBox.Text);
             }
             catch (Exception ex)
             {

@@ -7,6 +7,10 @@
 @using MongoDB.Driver
 @using System.Diagnostics;
 
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
 @inject MemberService memService
 @inject IWebHostEnvironment Environment
 @inject NavigationManager navMan
@@ -69,8 +73,33 @@
                     <button class="btn btn-primary profile-button" type="button" @onclick="SaveChange">Save Profile</button>
                     <button class="btn btn-primary profile-button" type="button" @onclick="Sign">Sign out</button>
                     <button class="btn btn-primary" profile-button type="button" @onclick="ChatWpf">Chat</button>
-
                 </div>
+                <div class="row mt-2">
+                <div class=" align-self-end">
+                    <label>
+                        User:
+                        <input @bind="Login_" />
+                    </label>
+                </div>
+                </div>
+                <div class="row mt-2">
+                <div class="form-group">
+                    <label>
+                        Message:
+                        <input @bind="messageInput" size="50" />
+                    </label>
+                </div>
+                </div>
+<button    class="btn btn-primary profile-button" @onclick="Send" disabled="@(!IsConnected)">Send</button>
+
+<hr>
+
+<ul id="messagesList">
+    @foreach (var message in messages)
+    {
+        <li>@message</li>
+    }
+</ul>
 
                 @if (Check_ == true)
                 {
@@ -116,6 +145,11 @@
     private bool? Check_1 = false;
     private string? Error_ = "";
 
+    private HubConnection? hubConnection;
+    private List<string> messages = new List<string>();
+    private string? userInput;
+    private string? messageInput;
+
     // Методы 
     protected override async Task OnInitializedAsync()
     {
@@ -124,6 +158,19 @@
         Password_ = member.Password;
         Email_ = member.Email;
         Phone_ = member.Phone;
+
+                hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/chat"))
+            .Build();
+
+        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        {
+            var encodedMsg = $"{user}: {message}";
+            messages.Add(encodedMsg);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
 
         if (member.GetType().Name == "Customer")
         {
@@ -147,6 +194,25 @@
             Addresss_ = (member as Designer).Address;
             Director_ = (member as Designer).Director;
             MainInjenerProject_ = (member as Designer).MainInjenerProject;
+        }
+    }
+
+        private async Task Send()
+    {
+        if (hubConnection is not null)
+            {
+                await hubConnection.SendAsync("SendMessage", Login_, messageInput);
+            }
+    }
+
+        public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
         }
     }
 
@@ -228,6 +294,6 @@
 
     private async void ChatWpf()
     {
-        Process.Start(@"C:\Users\kizaq\OneDrive\Рабочий стол\Projects\ChatGaz\ChatWpf\bin\Debug\ChatWpf.exe");
+        Process.Start(@"\\NAS36D451\user-domain$\stud\212014\Desktop\qwerty\ChatWpf\bin\Debug\ChatWpf.exe");
     }
 }
