@@ -5,26 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChatWpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="Autorization" Height="450" Width="800" >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="500"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="400"/>
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="300"/>
+            <RowDefinition Height="200"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <StackPanel Margin="4" Grid.Row="1" Grid.Column="1">
-            <Label Content="Введите логин"/>
-            <TextBox x:Name="userTextBox" />
-            <Label Content="Введите сообщение"/>
-            <TextBox x:Name="messageTextBox" />
-            <Button x:Name="sendBtn" Content="Отправить" Margin="10" Width="300" Click="Button_Click" IsEnabled="False" />
-            <ListBox x:Name="chatbox" Height="165"/>
+        <StackPanel Margin="4,4,4,4" Grid.Row="1" Grid.Column="1">
+            <Label Content="Autorization" HorizontalAlignment="Center" FontSize="20" Foreground="White" FontFamily="Segoe UI Black"></Label>
+            <Label Content="Логин" Foreground="White" FontFamily="Segoe UI Black"></Label>
+            <TextBox x:Name="LoginBox"></TextBox>
+            <Label Content="Пароль" Foreground="White" FontFamily="Segoe UI Black"></Label>
+            <TextBox x:Name="PasswordBox" Foreground="Black"></TextBox>
+            <Button Content="Авторизоваться" Margin="35" x:Name="BtnAutorization" Background="White" Foreground="Black" FontFamily="Segoe UI Black" Click="BtnAutorization_Click" ></Button>
         </StackPanel>
+
     </Grid>
+
+    <Window.Background>
+        <ImageBrush ImageSource="http://wallpapers-images.ru/1920x1080/skyscrapers/wallpapers/skyscrapers-images-1920x1080-15.jpg"/>
+    </Window.Background>
 </Window>

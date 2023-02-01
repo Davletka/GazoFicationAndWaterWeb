@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ChatAsp\ChatAsp.csproj" />
     <ProjectReference Include="..\ChatWpf\ChatWpf.csproj" />
   </ItemGroup>
 

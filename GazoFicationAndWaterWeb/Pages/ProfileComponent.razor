@@ -63,18 +63,19 @@
                 <div class="mt-5 text-center">
                     @if (member.GetType().Name == "Customer")
                     {
-                        <button class="btn btn-primary profile-button" type="button" @onclick="Projects" >Projects</button>
+                        <button class="btn btn-primary profile-button" type="button" @onclick="Projects">Projects</button>
                     }
                     @if (member.GetType().Name == "Developer" || member.GetType().Name == "Designer")
                     {
-                        <button class="btn btn-primary profile-button" type="button" @onclick="CheckDocs" >Loaded Files</button>
-                        <button class="btn btn-primary profile-button" type="button" @onclick="Files">Files</button>
+                        <button class="btn btn-primary profile-button" type="button" @onclick="CheckDocs">Loaded Files</button>
+                        <button class="btn btn-primary profile-button" type="button" @onclick="Files">Files </button>
                     }
                     <button class="btn btn-primary profile-button" type="button" @onclick="SaveChange">Save Profile</button>
                     <button class="btn btn-primary profile-button" type="button" @onclick="Sign">Sign out</button>
-                    <button class="btn btn-primary" profile-button type="button" @onclick="ChatWpf">Chat</button>
+                    <button class="btn btn-primary profile-button" type="button" @onclick="ChatWpf">Chat</button>
                 </div>
-                <div class="row mt-2">
+
+@*                <div class="row mt-2">
                 <div class=" align-self-end">
                     <label>
                         User:
@@ -90,25 +91,27 @@
                     </label>
                 </div>
                 </div>
-<button    class="btn btn-primary profile-button" @onclick="Send" disabled="@(!IsConnected)">Send</button>
+<button    class="btn btn-primary profile-button" @onclick="Send" disabled="@(!IsConnected)">Send</button>*@
 
-<hr>
+@*<hr>
 
-<ul id="messagesList">
-    @foreach (var message in messages)
-    {
-        <li>@message</li>
-    }
-</ul>
+    <ul id="messagesList">
+        @foreach (var message in messages)
+        {
+            <li>@message</li>
+        }
+    </ul>*@
 
-                @if (Check_ == true)
-                {
-                    <h2>@Error_</h2>
-                }
-                @if (Check_1 == true)
-                {
-                    <h2>@Error_</h2>
-                }
+
+@if (Check_ == true)
+{
+    <h2>@Error_</h2>
+}
+@if (Check_1 == true)
+{
+    <h2>@Error_</h2>
+}
+
             </div>
         </div>
     </div>
@@ -292,8 +295,9 @@
         navMan.NavigateTo("loadedfiles");
     }
 
-    private async void ChatWpf()
+    private void ChatWpf()
     {
-        Process.Start(@"\\NAS36D451\user-domain$\stud\212014\Desktop\qwerty\ChatWpf\bin\Debug\ChatWpf.exe");
+
+        Process.Start(@"D:\MyFiles\GazoficationFinalka\ChatWpf\bin\Debug\ChatWpf.exe");
     }
 }

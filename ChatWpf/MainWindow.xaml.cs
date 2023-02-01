@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using GazoFicationAndWaterWeb.Data;
+using Microsoft.AspNetCore.SignalR.Client;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,58 +24,34 @@ namespace ChatWpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        HubConnection connection;
         public MainWindow()
         {
             InitializeComponent();
+        }
 
-            connection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7055/chat")
-                .WithAutomaticReconnect()
-                .Build();
+        private void BtnAutorization_Click(object sender, RoutedEventArgs e)
+        {
+            var client = new MongoClient();
+            var database = client.GetDatabase("Davletka");
+            var collection = database.GetCollection<Members>("GazWater");
+            var list = collection.Find(x => true).ToList();
 
-            connection.On<string, string>("ReceiveMessage", (user, message) =>
+            if (LoginBox.Text != "" && PasswordBox.Text != "")
             {
-                Dispatcher.Invoke(() =>
+                foreach (var item in list)
                 {
-                    var newMessage = $"{user}: {message}";
-                    chatbox.Items.Insert(0, newMessage);
-                });
-            });
-        }
-        //ddd
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                // подключемся к хабу
-                await connection.StartAsync();
-                chatbox.Items.Add("Вы вошли в чат");
-                sendBtn.IsEnabled = true;
+                    if (LoginBox.Text == item.Login && PasswordBox.Text == item.Password)
+                    {
+                        ChatWindow chatWindow = new ChatWindow();
+                        chatWindow.Show();
+                        this.Close();
+                    }
+                }
             }
-            catch (Exception ex)
+            else
             {
-                chatbox.Items.Add(ex.Message);
+                MessageBox.Show("Введите данные");
             }
-        }
-
-        private async void Button_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                // отправка сообщения
-                await connection.InvokeAsync("SendMessage", userTextBox.Text, messageTextBox.Text);
-            }
-            catch (Exception ex)
-            {
-                chatbox.Items.Add(ex.Message);
-            }
-        }
-
-        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            await connection.InvokeAsync("Send", "", $"Пользователь {userTextBox.Text} выходит из чата");
-            await connection.StopAsync();   // отключение от хаба
         }
     }
 }
